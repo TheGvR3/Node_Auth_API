@@ -1,0 +1,17 @@
+import { db } from "../db.js";
+import { errorLogger } from "../middlewares/errorLogger.js";
+
+export async function getUserProfile(req, res) {
+  try {
+    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [req.user.userId]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Utente non trovato" });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    await errorLogger(`Errore nel recupero del profilo: ${error.message}`);
+    res.status(500).json({ error: "Errore interno del server" });
+  }
+}

@@ -1,0 +1,6 @@
+# Ignora la cartella delle dipendenze
+node_modules/
+
+# Ignora i file di ambiente
+.env
+.env.*
