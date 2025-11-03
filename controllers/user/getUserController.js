@@ -1,11 +1,12 @@
-import { db } from "../db.js";
-import { errorLogger } from "../middlewares/errorLogger.js";
+import { db } from "../../db.js";
+import { errorLogger } from "../../middlewares/errorLogger.js";
 
 export async function getUserProfile(req, res) {
   try {
     const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [req.user.userId]);
     
     if (rows.length === 0) {
+      await errorLogger(`Utente non trovato: ${req.user.userId}`).catch(console.error);
       return res.status(404).json({ error: "Utente non trovato" });
     }
 
