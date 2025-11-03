@@ -153,7 +153,7 @@ Impostare almeno:
   curl -X PUT http://localhost:3000/users/profile/updatePassword \
     -H "Authorization: Bearer <ACCESS_TOKEN>" \
     -H "Content-Type: application/json" \
-    -d '{"currentPassword":"Secret123!","newPassword":"NewSecret456!"}'
+    -d '{"oldPassword":"Secret123!","newPassword":"NewSecret456!"}'
   ```
 
 Note:
