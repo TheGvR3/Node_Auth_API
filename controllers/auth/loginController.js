@@ -59,16 +59,25 @@ export async function login(req, res) {
         // Salva il refresh token nel DB
         await db.query("UPDATE users SET refresh_token = ? WHERE id = ?", [refreshToken, user.id]);
 
-        //Risposta al client
+        // Imposto il refresh token come cookie HttpOnly
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',  // Usa HTTPS in produzione
+            sameSite: 'lax',  // Protezione CSRF
+            maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 giorni di durata
+            //domain: 'localhost',  // Specifica il dominio (localhost senza la porta)
+            path: '/',  // Imposta il percorso che consente al cookie di essere accessibile su tutto il sito
+        });
+
+
+        // Risposta al client con l'access token
         res.json({
             message: "Login effettuato con successo",
-            accessToken,
-            refreshToken,
+            accessToken,  // Restituiamo solo l'access token nel corpo della risposta
             user: {
                 id: user.id,
-                cf: user.codice_fiscale,
-                email: user.email
-            }
+                email: user.email,
+            },
         });
 
     } catch (error) {

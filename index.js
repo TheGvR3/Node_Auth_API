@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import os from "os";
+import cookieParser from "cookie-parser";
 
 //Routes
 import routes from "./routes/index.js";
@@ -13,9 +14,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(cookieParser()); // Cookie parser middleware
 app.use(express.json()); //json body parser
 app.use(express.urlencoded({ extended: true })); //urlencoded body parser (form data)
-app.use(cors()); //Abilita CORS
+const corsOptions = {
+  origin: 'http://localhost:5173',  // URL del frontend (cambia se necessario)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // I metodi HTTP permessi
+  credentials: true,  // Abilita l'invio di cookie e credenziali
+};
+app.use(cors(corsOptions));
 app.use(helmet()); //Sicurezza HTTP headers
 
 // Rotta base di test
