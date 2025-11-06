@@ -5,7 +5,7 @@ import { errorLogger } from "../../middlewares/errorLogger.js";
 export async function refreshToken(req, res) {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-        await errorLogger("Token mancante durante il refresh").catch(console.error);
+        //await errorLogger("Token mancante durante il refresh").catch(console.error);
         return res.status(400).json({ error: "Token mancante" });
     }
 
@@ -13,7 +13,7 @@ export async function refreshToken(req, res) {
         // Verifico il token
         const [rows] = await db.query("SELECT * FROM users WHERE refresh_token = ?", [refreshToken]);
         if (rows.length === 0) {
-            await errorLogger("Token di refresh non valido").catch(console.error);
+            //await errorLogger("Token di refresh non valido").catch(console.error);
             return res.status(403).json({ error: "Token non valido" });
         }
 
@@ -27,7 +27,7 @@ export async function refreshToken(req, res) {
         )
         res.json({ accessToken: newAccessToken });
     } catch (error) {
-        await errorLogger(`Errore durante il refresh del token - Errore: ${error.message}`).catch(console.error);
+        await errorLogger(`[refreshToken] - Errore durante il refresh del token - Errore: ${error.message}`).catch(console.error);
         res.status(500).json({ error: "Errore durante il refresh del token" });
     }
 }

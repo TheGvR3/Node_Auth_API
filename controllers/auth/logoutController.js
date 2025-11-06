@@ -5,7 +5,7 @@ import { errorLogger } from "../../middlewares/errorLogger.js";
 export async function logout(req, res) {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-        await errorLogger("Token mancante durante il logout").catch(console.error);
+        //await errorLogger("Token mancante durante il logout").catch(console.error);
         return res.status(400).json({ error: "Token mancante" });
     }
 

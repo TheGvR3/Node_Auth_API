@@ -12,7 +12,7 @@ export async function updateProfile(req, res) {
         // Controlla se l'utente esiste
         const [existing] = await db.query("SELECT * FROM users WHERE id = ?", [userId]);
         if (existing.length === 0) {
-            await errorLogger(`Utente non trovato: ${userId}`).catch(console.error);
+            //await errorLogger(`Utente non trovato: ${userId}`).catch(console.error);
             return res.status(404).json({ error: "Utente non trovato" });
         }
 
@@ -20,7 +20,7 @@ export async function updateProfile(req, res) {
         if (email) {
             const [emailExists] = await db.query("SELECT id FROM users WHERE email = ? AND id != ?", [email, userId]);
             if (emailExists.length > 0) {
-                await errorLogger(`Tentativo di aggiornamento email già in uso per utente ${userId}`).catch(console.error);
+                //await errorLogger(`Tentativo di aggiornamento email già in uso per utente ${userId}`).catch(console.error);
                 return res.status(400).json({ error: "Email già utilizzata da un altro utente" });
             }
         }
@@ -40,7 +40,7 @@ export async function updateProfile(req, res) {
 
         res.json({ message: "Profilo aggiornato con successo" });
     } catch (error) {
-        await errorLogger(`Errore durante updateProfile per utente ${userId}: ${error.message}`);
+        await errorLogger(`[updateProfile] - Errore durante updateProfile per utente ${userId}: ${error.message}`);
         res.status(500).json({ error: "Errore durante l'aggiornamento del profilo" });
     }
 }

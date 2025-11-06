@@ -1,39 +1,56 @@
 import express from "express";
 import dotenv from "dotenv";
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-
+import cors from "cors";
+import helmet from "helmet";
 import os from "os";
+
+//Routes
+import routes from "./routes/index.js";
 
 dotenv.config();
 
 const app = express();
-app.use(express.json()); // per leggere JSON
 const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json()); //json body parser
+app.use(express.urlencoded({ extended: true })); //urlencoded body parser (form data)
+app.use(cors()); //Abilita CORS
+app.use(helmet()); //Sicurezza HTTP headers
 
 // Rotta base di test
 app.get("/", (req, res) => {
-  res.json({ message: "API attiva" });
+  res.json({
+    message: "API attiva",
+    uptime: process.uptime().toFixed(0) + "s",
+    memoryUsage: (process.memoryUsage().rss / 1024 / 1024).toFixed(2) + " MB",
+  });
+});
+
+//Informazioni sulla macchina
+app.get("/status", (req, res) => {
+  const machine = {
+    nome: os.type(),
+    version: os.version(),
+    release: os.release(),
+    arch: os.arch(),
+    totalMem: `${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
+    freeMem: `${(os.freemem() / 1024 / 1024 / 1024).toFixed(2)} GB`,
+    memoryUsage: (process.memoryUsage().rss / 1024 / 1024).toFixed(2) + " MB",
+    uptime: `${(os.uptime() / 3600).toFixed(2)} h`,//aggiustare
+  };
+  res.json(machine);
 });
 
 // Collega tutte le rotte
-app.use("/auth", authRoutes);
+app.use("/", routes);
 
-app.use("/users", userRoutes);
-
-
-
-//Informazioni sulla macchina
-const machine = {
-  nome: os.type(),
-  version: os.version(),
-  release: os.release(),
-  arch: os.arch(),
-  memory: os.totalmem(),
-  dispMem: os.freemem(),
-  onlineUptime: os.uptime()
-}
-let machineData = JSON.stringify(machine);
+// Gestione errori
+app.use((req, res) => {res.status(404).json({ error: "Endpoint non trovato" });});
+app.use((err, req, res, next) => {
+  console.error("Errore:", err);
+  res.status(500).json({ error: "Errore interno del server" });
+});
 
 // Avvia il server
-app.listen(PORT, () => console.log(`Server avviato su http://localhost:${PORT} su ${machineData}`));
+app.listen(PORT, () => console.log(`Server avviato su http://localhost:${PORT}`));

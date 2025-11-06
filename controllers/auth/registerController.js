@@ -9,14 +9,14 @@ export async function register(req, res) {
         // Controllo se il codice fiscale esiste gia
         const [existsCf] = await db.query("SELECT id FROM users WHERE codice_fiscale = ?", [codice_fiscale]);
         if (existsCf.length > 0) {
-            await errorLogger(`Tentativo di registrazione con codice fiscale già esistente: ${codice_fiscale}`).catch(console.error);
+            //await errorLogger(`Tentativo di registrazione con codice fiscale già esistente: ${codice_fiscale}`).catch(console.error);
             return res.status(400).json({ error: "Codice fiscale già registrato" });
         }
 
         // Controllo se l'email esiste gia
         const [existsMail] = await db.query("SELECT id FROM users WHERE email = ?", [email]);
         if (existsMail.length > 0) {
-            await errorLogger(`Tentativo di registrazione con email già esistente: ${email}`).catch(console.error);
+            //await errorLogger(`Tentativo di registrazione con email già esistente: ${email}`).catch(console.error);
             return res.status(400).json({ error: "Email già registrata" });
         }
 
@@ -27,7 +27,7 @@ export async function register(req, res) {
 
         res.json({ message: "Utente registrato con successo!" });
     } catch (error) {
-        await errorLogger(`Errore durante la registrazione per email: ${email} - Errore: ${error.message}\n`).catch(console.error);
+        await errorLogger(`[register] - Errore durante la registrazione per email: ${email} - Errore: ${error.message}\n`).catch(console.error);
         res.status(500).json({ error: "Errore durante la registrazione" });
 
     }

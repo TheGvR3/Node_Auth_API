@@ -24,7 +24,7 @@ export async function login(req, res) {
             query = "SELECT * FROM users WHERE codice_fiscale = ?";
             params = [identifier.toUpperCase()]; // Normalizza in maiuscolo
         } else {
-            await errorLogger(`Formato identificatore non valido: ${identifier}`).catch(console.error);
+            //await errorLogger(`Formato identificatore non valido: ${identifier}`).catch(console.error);
             return res.status(400).json({ error: "Formato identificatore non valido" });
         }
 
@@ -32,7 +32,7 @@ export async function login(req, res) {
         // Cerco l’utente nel DB
         const [rows] = await db.query(query, params);
         if (rows.length === 0) {
-            await errorLogger(`Utente non trovato per email o codice fiscale: ${identifier}`).catch(console.error);
+            //await errorLogger(`Utente non trovato per email o codice fiscale: ${identifier}`).catch(console.error);
             return res.status(401).json({ error: "Utente non trovato" });
         }
 
@@ -40,7 +40,7 @@ export async function login(req, res) {
         // Confronto password
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) {
-            await errorLogger(`Errore durante il login per email o codice fiscale: ${identifier}`).catch(console.error);
+            //await errorLogger(`Errore durante il login per email o codice fiscale: ${identifier}`).catch(console.error);
             return res.status(401).json({ error: "Password errata" });
         }
 
@@ -74,11 +74,11 @@ export async function login(req, res) {
     } catch (error) {
         // se il token è scaduto o falsificato
         if (error.name === "TokenExpiredError" || error.name === "JsonWebTokenError") {
-            await errorLogger(`Tentativo di refresh con token scaduto o invalido: ${error.message}`).catch(console.error);
+            await errorLogger(`[login] - Tentativo di refresh con token scaduto o invalido: ${error.message}`).catch(console.error);
             return res.status(403).json({ error: "Token di refresh non valido o scaduto" });
         }
 
-        await errorLogger(`Errore generico durante il refresh: ${error.message}`).catch(console.error);
+        await errorLogger(`[login] - Errore generico durante il refresh: ${error.message}`).catch(console.error);
         res.status(500).json({ error: "Errore durante il refresh del token" });
     }
 }
